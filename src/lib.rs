@@ -1,7 +1,8 @@
 // Copyright (c) The nextest Contributors
+// Copyright (c) Kaspar Schleiser <kaspar@schleiser.de>
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-//! Support for partitioning test runs across several machines.
+//! Support for partitioning task runs across several machines.
 //!
 //! At the moment this only supports simple hash-based and count-based sharding. In the future it
 //! could potentially be made smarter: e.g. using data to pick different sets of binaries and tests
@@ -45,8 +46,8 @@ pub enum PartitionerBuilder {
 
 /// Represents an individual partitioner, typically scoped to a test binary.
 pub trait Partitioner: fmt::Debug {
-    /// Returns true if the given test name matches the partition.
-    fn test_matches(&mut self, test_name: &str) -> bool;
+    /// Returns true if the given task name matches the partition.
+    fn task_matches(&mut self, task_name: &str) -> bool;
 }
 
 impl PartitionerBuilder {
@@ -162,7 +163,7 @@ impl CountPartitioner {
 }
 
 impl Partitioner for CountPartitioner {
-    fn test_matches(&mut self, _test_name: &str) -> bool {
+    fn task_matches(&mut self, _task_name: &str) -> bool {
         let matches = self.curr == self.shard_minus_one;
         self.curr = (self.curr + 1) % self.total_shards;
         matches
@@ -186,9 +187,9 @@ impl HashPartitioner {
 }
 
 impl Partitioner for HashPartitioner {
-    fn test_matches(&mut self, test_name: &str) -> bool {
+    fn task_matches(&mut self, task_name: &str) -> bool {
         let mut hasher = XxHash64::default();
-        test_name.hash(&mut hasher);
+        task_name.hash(&mut hasher);
         hasher.finish() % self.total_shards == self.shard_minus_one
     }
 }
