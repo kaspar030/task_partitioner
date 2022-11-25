@@ -2,6 +2,9 @@
 name = "task_partitioner"
 version = "0.1.0"
 edition = "2021"
+authors = [ "Kaspar Schleiser <kaspar@schleiser.de>" ]
+readme = "README.md"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 twox-hash = "1.6.3"
